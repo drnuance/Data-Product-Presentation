@@ -30,27 +30,41 @@ ext_widgets : {rCharts: [libraries/nvd3]}
 
 - User can change it and refresh the output by clicking the Update View button (meaning submit in this slide). 
 
-```{r opts.label = 'shiny'}
-slidifyUI(
-  sidebarPanel(
-  ),
-        mainPanel(
-          selectInput("y", "X Axis",
-                      c("Sales", "Revenue", "Price_Index", "Income_Level",
-                        "Market_Potential"
-                      ),
-                      selected = "Sales"
-          ),
-          selectInput("x", "Y Axis",
-                      c("Sales", "Revenue", "Price_Index", "Income_Level",
-                        "Market_Potential"
-                      ),
-                      selected = "Revenue"
-          ),
-          submitButton("Update View", icon("refresh"))
-        )
-)
-```
+<div class="row-fluid">
+  <div class="col-sm-4">
+    <form class="well"></form>
+  </div>
+  <div class="col-sm-8">
+    <div class="form-group shiny-input-container">
+      <label class="control-label" for="y">X Axis</label>
+      <div>
+        <select id="y"><option value="Sales" selected>Sales</option>
+<option value="Revenue">Revenue</option>
+<option value="Price_Index">Price_Index</option>
+<option value="Income_Level">Income_Level</option>
+<option value="Market_Potential">Market_Potential</option></select>
+        <script type="application/json" data-for="y" data-nonempty="">{}</script>
+      </div>
+    </div>
+    <div class="form-group shiny-input-container">
+      <label class="control-label" for="x">Y Axis</label>
+      <div>
+        <select id="x"><option value="Sales">Sales</option>
+<option value="Revenue" selected>Revenue</option>
+<option value="Price_Index">Price_Index</option>
+<option value="Income_Level">Income_Level</option>
+<option value="Market_Potential">Market_Potential</option></select>
+        <script type="application/json" data-for="x" data-nonempty="">{}</script>
+      </div>
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-refresh"></i>
+        Update View
+      </button>
+    </div>
+  </div>
+</div>
 
 --- 
 
@@ -69,8 +83,23 @@ The server code mainly do the following three things:
 
 Restrict the slide number, we only show the correlation test and ouput on Sales vs. Revenue.
 
-```{r, error=FALSE, warning=FALSE}
+
+```r
 freey <- data.frame(cbind(as.numeric(freeny.y), freeny.x))# Impute Data
 colnames(freey) <- c("Sales", "Revenue", "Price_Index", "Income_Level", "Market_Potential")
 cor.test(freey$Sales, freey$Revenue, conf.level = 0.01) # Analyze
+```
+
+```
+## 
+## 	Pearson's product-moment correlation
+## 
+## data:  freey$Sales and freey$Revenue
+## t = 91.435, df = 37, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 1 percent confidence interval:
+##  0.9977853 0.9978037
+## sample estimates:
+##       cor 
+## 0.9977945
 ```

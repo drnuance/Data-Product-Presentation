@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Identifying Factors Affecting Revenue</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Identifying Factors Affecting Revenue">
+  <meta name="author" content="Qian (Chandler) Wang">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="libraries/widgets/interactive/css/aceeditor.css"></link>
+<link rel=stylesheet href="libraries/widgets/nvd3/css/nv.d3.css"></link>
+<link rel=stylesheet href="libraries/widgets/nvd3/css/rNVD3.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  <script src="libraries/widgets/nvd3/js/jquery-1.8.2.min.js"></script>
+<script src="libraries/widgets/nvd3/js/d3.v3.min.js"></script>
+<script src="libraries/widgets/nvd3/js/nv.d3.min-new.js"></script>
+<script src="libraries/widgets/nvd3/js/fisheye.js"></script>
+
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Identifying Factors Affecting Revenue</h1>
+    <h2>Project Presentation for Developing Data Product</h2>
+    <p>Qian (Chandler) Wang<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Overview</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li><p>Main Purpose: to demonstrate the ability of using Shiny and Slidify comprehensively that can interact with users and conduct quantatitive anlysis in R</p></li>
+<li><p>App Function: Allow manager to do a simple business analysis on identifying potential factors affecting revenue. A linear regression plot will be generated on any two attributes. Furthermore, quantitative correlation test result will be shown. Suggestion on accept/reject hypothesis will be provided based on P-Value. </p></li>
+<li><p>Components:
+    a) User Inputs
+    b) Analysis on Server
+    c) Feedback</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>User Input</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>User Input mainly contains two dropdown list selection. Users can select the variable to be put on the plot. By default, the Y Axis will be Sales. And the X Axis will be Revenue.</p></li>
+<li><p>User can change it and refresh the output by clicking the Update View button (meaning submit in this slide). </p></li>
+</ul>
+
+<div class="row-fluid">
+  <div class="col-sm-4">
+    <form class="well"></form>
+  </div>
+  <div class="col-sm-8">
+    <div class="form-group shiny-input-container">
+      <label class="control-label" for="y">X Axis</label>
+      <div>
+        <select id="y"><option value="Sales" selected>Sales</option>
+<option value="Revenue">Revenue</option>
+<option value="Price_Index">Price_Index</option>
+<option value="Income_Level">Income_Level</option>
+<option value="Market_Potential">Market_Potential</option></select>
+        <script type="application/json" data-for="y" data-nonempty="">{}</script>
+      </div>
+    </div>
+    <div class="form-group shiny-input-container">
+      <label class="control-label" for="x">Y Axis</label>
+      <div>
+        <select id="x"><option value="Sales">Sales</option>
+<option value="Revenue" selected>Revenue</option>
+<option value="Price_Index">Price_Index</option>
+<option value="Income_Level">Income_Level</option>
+<option value="Market_Potential">Market_Potential</option></select>
+        <script type="application/json" data-for="x" data-nonempty="">{}</script>
+      </div>
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-refresh"></i>
+        Update View
+      </button>
+    </div>
+  </div>
+</div>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Analysis on Server</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The server code mainly do the following three things:</p>
+
+<ul>
+<li><p>Load necessary libraries and Freeny data from the Dataset and imput it to an appropriate data frame.</p></li>
+<li><p>A renderPlot function to prepare the plot using ggplot. A linear regression reference line and its confidential interval will be provided. </p></li>
+<li><p>A renderText function to conduct the correlation test and then generate output from the result list. The output will be different based on the P-Value and whether to accept or reject the correlation assumption.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Sample Output</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Restrict the slide number, we only show the correlation test and ouput on Sales vs. Revenue.</p>
+
+<pre><code class="r">freey &lt;- data.frame(cbind(as.numeric(freeny.y), freeny.x))# Impute Data
+colnames(freey) &lt;- c(&quot;Sales&quot;, &quot;Revenue&quot;, &quot;Price_Index&quot;, &quot;Income_Level&quot;, &quot;Market_Potential&quot;)
+cor.test(freey$Sales, freey$Revenue, conf.level = 0.01) # Analyze
+</code></pre>
+
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  freey$Sales and freey$Revenue
+## t = 91.435, df = 37, p-value &lt; 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 1 percent confidence interval:
+##  0.9977853 0.9978037
+## sample estimates:
+##       cor 
+## 0.9977945
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Overview'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='User Input'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Analysis on Server'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Sample Output'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  <script src="libraries/widgets/interactive/js/ace/js/ace.js"></script>
+<script src="libraries/widgets/interactive/js/opencpu-0.5.js"></script>
+<script src="libraries/widgets/interactive/js/interactive.js"></script>
+
+  <script src="shared/shiny.js" type="text/javascript"></script>
+  <script src="shared/slider/js/jquery.slider.min.js"></script>
+  <script src="shared/bootstrap/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="shared/slider/css/jquery.slider.min.css"></link>
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
